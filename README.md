@@ -1,5 +1,7 @@
 # <em>µ</em>ce-loader
 
+<sup>**Social Media Photo by [Guillaume Bolduc](https://unsplash.com/@guibolduc) on [Unsplash](https://unsplash.com/)**</sup>
+
 A minimalistic, framework agnostic, lazy Custom Elements loader.
 
 ```html
