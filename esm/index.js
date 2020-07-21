@@ -21,8 +21,8 @@ export default (path, options = {}) => {
         j = 0, {length} = addedNodes; j < length; j++
       ) {
         const node = addedNodes[j];
-        if (node.nodeType === 1) {
-          const is = (node.getAttribute('is') || node.nodeName).toLowerCase();
+        if (node.querySelectorAll) {
+          const is = (node.getAttribute('is') || node.tagName).toLowerCase();
           if (0 < is.indexOf('-') && !loaded.has(is) && !ignore.test(is)) {
             loaded.add(is);
             const js = ownerDocument.createElement('script');

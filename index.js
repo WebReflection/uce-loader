@@ -24,8 +24,8 @@ self.uceLoader = (function (exports) {
         for (var addedNodes = mutations[i].addedNodes, j = 0, _length = addedNodes.length; j < _length; j++) {
           var node = addedNodes[j];
 
-          if (node.nodeType === 1) {
-            var is = (node.getAttribute('is') || node.nodeName).toLowerCase();
+          if (node.querySelectorAll) {
+            var is = (node.getAttribute('is') || node.tagName).toLowerCase();
 
             if (0 < is.indexOf('-') && !loaded.has(is) && !ignore.test(is)) {
               loaded.add(is);
