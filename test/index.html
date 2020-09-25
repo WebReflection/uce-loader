@@ -5,7 +5,13 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>uce-loader</title>
   <script src="../min.js"></script>
-  <script>uceLoader('.');</script>
+  <script>uceLoader({
+    on: function (newTag) {
+      var js = document.createElement('script');
+      js.src = 'js/components/' + newTag + '.js';
+      document.head.appendChild(js);
+    }
+  });</script>
 </head>
 <body>
   <compo-nent></compo-nent>

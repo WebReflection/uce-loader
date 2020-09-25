@@ -5,18 +5,12 @@ const loaded = new Set;
 /**
  * Start observing a document, or a specific container, and automatically
  * download once Custom Elements from a specific path
- * @param {string} path where to find custom elements files
- * @param {{container:Node, extension:string}} [options] optional configuration
+ * @param {{container:Node, on:function}} configuration
  * with `container`, `document` by default, and `extension`, `".js"` by default
  * @returns {MutationObserver} the disconnect-able `container` observer
  */
-export default (path, options) => {
-  if (!options) options = {};
-  path = path.replace(/\/?$/, '/');
-  const ext = options.extension || '.js';
-  const loader = options.loader;
+export default (options) => {
   const target = options.container || document;
-  const ownerDocument = target.ownerDocument || target;
   const load = mutations => {
     for (let i = 0, {length} = mutations; i < length; i++) {
       for (let
@@ -24,26 +18,20 @@ export default (path, options) => {
         j = 0, {length} = addedNodes; j < length; j++
       ) {
         const node = addedNodes[j];
-        if (node.querySelectorAll) {
-          const is = (node.getAttribute('is') || node.tagName).toLowerCase();
+        const {children, getAttribute, tagName} = node;
+        if (getAttribute) {
+          const is = (getAttribute.call(node, 'is') || tagName).toLowerCase();
           if (0 < is.indexOf('-') && !loaded.has(is) && !ignore.test(is)) {
             loaded.add(is);
-            if (loader)
-              loader.call(options, path, is);
-            else {
-              const js = ownerDocument.createElement('script');
-              js.async = true;
-              js.src = path + is + ext;
-              ownerDocument.head.appendChild(js);
-            }
+            options.on(is);
           }
-          crawl(node.querySelectorAll('*'));
+          crawl(children);
         }
       }
     }
   };
   const crawl = addedNodes => { load([{addedNodes}]) };
-  crawl(ownerDocument == target ? target.querySelectorAll('*') : [target]);
+  crawl(document == target ? target.querySelectorAll('*') : [target]);
   const observer = new MutationObserver(load);
   observer.observe(target, {subtree: true, childList: true});
   return observer;

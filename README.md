@@ -4,6 +4,12 @@
 
 A minimalistic, framework agnostic, lazy Custom Elements loader.
 
+## Breaking V1
+
+The *loader* now requires an object with an optional `container` property and an `on(tagName){}` method *in charge* of loading/resolving the external file.
+
+### Example
+
 ```html
 <!DOCTYPE html>
 <html lang="en">
@@ -15,7 +21,16 @@ A minimalistic, framework agnostic, lazy Custom Elements loader.
   import loader from '//unpkg.com/uce-loader?module';
 
   // will load every custom elements via the path
-  loader('js/components');
+  loader({
+    // by default it's document
+    container: document.body,
+    // invoked per each new custom-element name found
+    on(newTag) {
+      var js = document.createElement('script');
+      js.src = 'js/components/' + newTag + '.js';
+      document.head.appendChild(js);
+    }
+  });
   // js/components/compo-nent.js
   // js/components/what-ever.js
   // which will bring in also
@@ -30,22 +45,4 @@ A minimalistic, framework agnostic, lazy Custom Elements loader.
 </html>
 ```
 
-The `loader(path[,{container: document, extension: ".js", loader(path, name){}}])` is extremely simplified, but if you need anything more complex, please check [lazytag](https://github.com/WebReflection/lazytag#readme) out.
-
-If `options` has a `loader` callback, it will be invoked once per each element found in the container.
-
-```js
-// will load js/view/compo-nent.uce
-loader("js/view/", {
-  loader(path, name) {
-    fetch(path + name + ".uce")
-      .then((b) => b.text())
-      .then(definition => {
-        document.body.appendChild(
-          customElements.get('uce-template')
-                        .from(definition)
-        );
-      })
-  }
-});
-```
+If `loader({container: document, on(tagName){}})` API is too simplified, feel free to check [lazytag](https://github.com/WebReflection/lazytag#readme) out.

@@ -1,8 +1,8 @@
 addEventListener(
   'DOMContentLoaded',
   function () {
-    uceLoader('.', {
-      loader: function (path, name) {
+    uceLoader({
+      on: function (name) {
         if (name !== 'uce-template') {
           var self = this;
           if (!self.queue) {
@@ -12,12 +12,12 @@ addEventListener(
             document.body.appendChild(script).onload = function () {
               self.Template = customElements.get('uce-template');
               for (var i = 0; i < self.queue.length; i++)
-                self.loader(path, self.queue[i]);
+                self.loader(self.queue[i]);
             };
           }
           else if (self.Template) {
             var xhr = new XMLHttpRequest;
-            xhr.open('get', path + name + '.uce', true);
+            xhr.open('get', name + '.uce', true);
             xhr.send(null);
             xhr.onload = function () {
               document.body.appendChild(

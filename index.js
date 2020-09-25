@@ -7,39 +7,31 @@ self.uceLoader = (function (exports) {
   /**
    * Start observing a document, or a specific container, and automatically
    * download once Custom Elements from a specific path
-   * @param {string} path where to find custom elements files
-   * @param {{container:Node, extension:string}} [options] optional configuration
+   * @param {{container:Node, on:function}} configuration
    * with `container`, `document` by default, and `extension`, `".js"` by default
    * @returns {MutationObserver} the disconnect-able `container` observer
    */
 
-  var index = (function (path, options) {
-    if (!options) options = {};
-    path = path.replace(/\/?$/, '/');
-    var ext = options.extension || '.js';
-    var loader = options.loader;
+  var index = (function (options) {
     var target = options.container || document;
-    var ownerDocument = target.ownerDocument || target;
 
     var load = function load(mutations) {
       for (var i = 0, length = mutations.length; i < length; i++) {
         for (var addedNodes = mutations[i].addedNodes, j = 0, _length = addedNodes.length; j < _length; j++) {
           var node = addedNodes[j];
+          var children = node.children,
+              getAttribute = node.getAttribute,
+              tagName = node.tagName;
 
-          if (node.querySelectorAll) {
-            var is = (node.getAttribute('is') || node.tagName).toLowerCase();
+          if (getAttribute) {
+            var is = (getAttribute.call(node, 'is') || tagName).toLowerCase();
 
             if (0 < is.indexOf('-') && !loaded.has(is) && !ignore.test(is)) {
               loaded.add(is);
-              if (loader) loader.call(options, path, is);else {
-                var js = ownerDocument.createElement('script');
-                js.async = true;
-                js.src = path + is + ext;
-                ownerDocument.head.appendChild(js);
-              }
+              options.on(is);
             }
 
-            crawl(node.querySelectorAll('*'));
+            crawl(children);
           }
         }
       }
@@ -51,7 +43,7 @@ self.uceLoader = (function (exports) {
       }]);
     };
 
-    crawl(ownerDocument == target ? target.querySelectorAll('*') : [target]);
+    crawl(document == target ? target.querySelectorAll('*') : [target]);
     var observer = new MutationObserver(load);
     observer.observe(target, {
       subtree: true,

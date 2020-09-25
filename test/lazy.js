@@ -1,16 +1,17 @@
 addEventListener(
   'DOMContentLoaded',
   function () {
-    uceLoader('.', {
-      loader: function (path, name) {
+    uceLoader({
+      Template: customElements.get('uce-template'),
+      on: function (name) {
         if (name !== 'uce-template') {
           var xhr = new XMLHttpRequest;
-          xhr.open('get', path + name + '.uce', true);
+          var Template = this.Template;
+          xhr.open('get', name + '.uce', true);
           xhr.send(null);
           xhr.onload = function () {
             document.body.appendChild(
-              customElements.get('uce-template')
-                            .from(xhr.responseText)
+              Template.from(xhr.responseText)
             );
           };
         }
