@@ -30,4 +30,22 @@ A minimalistic, framework agnostic, lazy Custom Elements loader.
 </html>
 ```
 
-The `loader(path[,{container: document, extension: ".js"}])` is extremely simplified, but if you need anything more complex, please check [lazytag](https://github.com/WebReflection/lazytag#readme) out.
+The `loader(path[,{container: document, extension: ".js", loader(path, name){}}])` is extremely simplified, but if you need anything more complex, please check [lazytag](https://github.com/WebReflection/lazytag#readme) out.
+
+If `options` has a `loader` callback, it will be invoked once per each element found in the container.
+
+```js
+// will load js/view/compo-nent.uce
+loader("js/view/", {
+  loader(path, name) {
+    fetch(path + name + ".uce")
+      .then((b) => b.text())
+      .then(definition => {
+        document.body.appendChild(
+          customElements.get('uce-template')
+                        .from(definition)
+        );
+      })
+  }
+});
+```

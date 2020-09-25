@@ -13,9 +13,11 @@ self.uceLoader = (function (exports) {
    * @returns {MutationObserver} the disconnect-able `container` observer
    */
 
-  var index = (function (path) {
-    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  var index = (function (path, options) {
+    if (!options) options = {};
+    path = path.replace(/\/?$/, '/');
     var ext = options.extension || '.js';
+    var loader = options.loader;
     var target = options.container || document;
     var ownerDocument = target.ownerDocument || target;
 
@@ -29,10 +31,12 @@ self.uceLoader = (function (exports) {
 
             if (0 < is.indexOf('-') && !loaded.has(is) && !ignore.test(is)) {
               loaded.add(is);
-              var js = ownerDocument.createElement('script');
-              js.async = true;
-              js.src = path.replace(/\/?$/, '/') + is + ext;
-              ownerDocument.head.appendChild(js);
+              if (loader) loader.call(options, path, is);else {
+                var js = ownerDocument.createElement('script');
+                js.async = true;
+                js.src = path + is + ext;
+                ownerDocument.head.appendChild(js);
+              }
             }
 
             crawl(node.querySelectorAll('*'));

@@ -10,8 +10,11 @@ const loaded = new Set;
  * with `container`, `document` by default, and `extension`, `".js"` by default
  * @returns {MutationObserver} the disconnect-able `container` observer
  */
-export default (path, options = {}) => {
+export default (path, options) => {
+  if (!options) options = {};
+  path = path.replace(/\/?$/, '/');
   const ext = options.extension || '.js';
+  const loader = options.loader;
   const target = options.container || document;
   const ownerDocument = target.ownerDocument || target;
   const load = mutations => {
@@ -25,10 +28,14 @@ export default (path, options = {}) => {
           const is = (node.getAttribute('is') || node.tagName).toLowerCase();
           if (0 < is.indexOf('-') && !loaded.has(is) && !ignore.test(is)) {
             loaded.add(is);
-            const js = ownerDocument.createElement('script');
-            js.async = true;
-            js.src = path.replace(/\/?$/, '/') + is + ext;
-            ownerDocument.head.appendChild(js);
+            if (loader)
+              loader.call(options, path, is);
+            else {
+              const js = ownerDocument.createElement('script');
+              js.async = true;
+              js.src = path + is + ext;
+              ownerDocument.head.appendChild(js);
+            }
           }
           crawl(node.querySelectorAll('*'));
         }
