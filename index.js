@@ -43,7 +43,7 @@ self.uceLoader = (function (exports) {
       }]);
     };
 
-    crawl(document == target ? target.querySelectorAll('*') : [target]);
+    crawl(document == target ? target.documentElement.children : [target]);
     var observer = new MutationObserver(load);
     observer.observe(target, {
       subtree: true,

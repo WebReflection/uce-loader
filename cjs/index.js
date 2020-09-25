@@ -32,7 +32,7 @@ module.exports = (options) => {
     }
   };
   const crawl = addedNodes => { load([{addedNodes}]) };
-  crawl(document == target ? target.querySelectorAll('*') : [target]);
+  crawl(document == target ? target.documentElement.children : [target]);
   const observer = new MutationObserver(load);
   observer.observe(target, {subtree: true, childList: true});
   return observer;
