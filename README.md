@@ -4,10 +4,6 @@
 
 A minimalistic, framework agnostic, lazy Custom Elements loader.
 
-## Breaking V1
-
-The *loader* now requires an object with an optional `container` property and an `on(tagName){}` method *in charge* of loading/resolving the external file.
-
 ### Example
 
 ```html
@@ -26,8 +22,8 @@ The *loader* now requires an object with an optional `container` property and an
     container: document.body,
     // invoked per each new custom-element name found
     on(newTag) {
-      var js = document.createElement('script');
-      js.src = 'js/components/' + newTag + '.js';
+      const js = document.createElement('script');
+      js.src = `js/components/${newTag}.js`;
       document.head.appendChild(js);
     }
   });
