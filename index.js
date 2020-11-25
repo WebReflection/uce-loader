@@ -5,10 +5,15 @@ self.uceLoader = (function (exports) {
   var ignore = /^(?:annotation-xml|color-profile|font-face(?:|-format|-name|-src|-uri)|missing-glyph)$/i;
   var loaded = new Set();
   /**
+   * @typedef {Object} Options
+   * @prop {Node} [container=document] - where to monitor Custom Elements
+   * @prop {function} on - a callback invoked per each new Custom Element
+   */
+
+  /**
    * Start observing a document, or a specific container, and automatically
-   * download once Custom Elements from a specific path
-   * @param {{container:Node, on:function}} configuration
-   * with `container`, `document` by default, and `extension`, `".js"` by default
+   * download once Custom Elements from a specific path.
+   * @param {Options} options configuration options
    * @returns {MutationObserver} the disconnect-able `container` observer
    */
 
@@ -43,7 +48,7 @@ self.uceLoader = (function (exports) {
       }]);
     };
 
-    crawl(document == target ? target.documentElement.children : [target]);
+    crawl([document == target ? target.documentElement : target]);
     var observer = new MutationObserver(load);
     observer.observe(target, {
       subtree: true,
