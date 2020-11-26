@@ -42,3 +42,17 @@ A minimalistic, framework agnostic, lazy Custom Elements loader.
 ```
 
 If `loader({container: document, on(tagName){}})` API is too simplified, feel free to check [lazytag](https://github.com/WebReflection/lazytag#readme) out.
+
+### About ShadowDOM
+
+If your components use `attachShadow` and internally use custom elements that should be lazy loaded, be sure the `shadowRoot` is observed.
+
+```js
+const shadowRoot = this.attachShadow({mode: any});
+loader({
+    container: shadowRoot,
+    on(newTag) {
+      // ... load components
+    }
+  });
+```
