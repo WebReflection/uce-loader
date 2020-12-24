@@ -33,7 +33,7 @@ self.uceLoader = (function (exports) {
 
             if (0 < is.indexOf('-') && !loaded.has(is) && !ignore.test(is)) {
               loaded.add(is);
-              options.on(is);
+              customElements.get(is) || options.on(is);
             }
 
             crawl(children);

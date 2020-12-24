@@ -56,3 +56,10 @@ loader({
     }
   });
 ```
+
+### V2 vs V1
+
+Current version of this module does *not* invoke the `.on(...)` method if the element is already registered as Custom Element.
+
+In *V1* any tag name would've passed through the loader instead.
+
